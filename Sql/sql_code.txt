@@ -1,0 +1,162 @@
+create database car_management;
+
+use car_management;
+
+create table customer
+(
+	userId int primary key,
+    userName varchar(255),
+    userPassword varchar(255)
+);
+
+create table driver
+(
+	driverId int primary key,
+    driverName varchar(255),
+    carNo int,
+    contactNo int,
+    carType varchar(255)
+);
+
+create table bookingDetails
+(
+	bookId int primary key,
+    totalBill int,
+    pickupPoint varchar(255),
+    dropPoint varchar(255),
+    userId int,
+    driverId int,
+    foreign key (userId) references driver(driverId),
+    foreign key (userId) references customer(userId)
+);
+
+insert into customer(userId,userName,userPassword) 
+values (1 ,"Gaurav", "****"), (2,"Yash","***"),(3,"Nikhil","*****"),(4,"Shubham","**");
+
+insert into driver(driverId,driverName,carNo,contactNo,carType) 
+values (1 ,"Aviral", 2345, 867908,"mini"), (2 ,"Ram", 8745, 945845,"mini"),
+(3 ,"Shayam", 0975, 868534,"micro"),(4 ,"Raj", 8985, 898405,"micro");
+
+insert into bookingDetails(bookId,totalbill,pickupPoint,dropPoint,userId,driverId)
+values(1,70,"Bellandur","Accolite",1,2),(2,100,"KR Puram","Ibis",2,1),
+(3,170,"Whitefield","Cisco",4,3),(4,140,"Cisco","Oracle",3,4);
+
+select * from customer;
+select * from driver;
+select * from bookingDetails;
+
+/* ---------update query ----------- */
+update driver set driverName = 'Manas' where driverId =3;
+select * from driver;
+
+/*--------inserting few more bookings in bookingDetails table ------*/
+insert into bookingDetails(bookId,totalbill,pickupPoint,dropPoint,userId,driverId)
+values(5,130,"A","B",1,3),(6,190,"KR","Ib",2,4),
+(7,190,"W","C",1,4),(8,120,"C","O",3,1);
+
+select * from bookingDetails;
+
+select * from bookingDetails
+    inner join customer on customer.userId=bookingDetails.userId ;
+    
+/* function to get the total amount of all car rented by the customer */    
+delimiter //
+create procedure total_amount_customer
+(
+	IN userID int,
+    OUT sumOfAmount int
+)
+begin
+	select sum(bookingDetails.totalbill) into sumOfAmount from bookingDetails
+    join customer on customer.userId=bookingDetails.userId
+    where customer.userId =userID;
+end //
+
+/*----- total bill of customer 2 -----*/
+call total_amount_customer(2,@balance);
+select @balance;
+
+/*----- total bill of customer 1 -----*/
+call total_amount_customer(1,@balance);
+select @balance;
+
+
+
+
+/*function to get the number of booking by each driver */
+delimiter //
+create procedure total_count_booking
+(
+	IN driverID int,
+    OUT totalcount int
+)
+begin
+	select count(*) into totalcount from bookingDetails
+    join driver on driver.driverId=bookingDetails.driverId
+    where driver.driverId =driverID;
+end //
+
+/*----- total count of ride for driver 1 -----*/
+call total_count_booking(1,@countride);
+select @countride;
+
+/*----- total count of ride for driver 4 -----*/
+call total_count_booking(4,@countride);
+select @countride;
+
+
+/* function to get the total amount received by the each driver */    
+delimiter //
+create procedure total_received_amount
+(
+	IN driverID int,
+    OUT totalAmount int
+)
+begin
+	select sum(bookingDetails.totalbill) into totalAmount from bookingDetails
+    join driver on driver.driverId=bookingDetails.driverId
+    where driver.driverId =driverID;
+end //
+
+/*----total amount received by driver 1 ------*/
+call total_received_amount(1,@payment);
+select @payment;    
+
+/*----total amount received by driver 4 ------*/
+call total_received_amount(4,@payment);
+select @payment;
+    
+
+
+
+/*---------Trigger to set a minimum payment balance for ride-------*/
+
+delimiter //
+create trigger min_payment
+    before insert on bookingDetails
+    for each row 
+begin
+    IF NEW.totalBill < 100 THEN SET NEW.totalBill = 100;
+	END IF;
+end//
+delimiter ;
+
+select *from bookingDetails;
+
+insert into bookingDetails values(9,20,"Y","Z",1,3);
+
+select* from bookingDetails;
+
+
+
+
+
+
+/*-----creating view for driver to know the details ----*/
+create view Drivers_car  as
+select b.bookId,b.totalbill,b.pickupPoint,b.dropPoint,b.userId,b.driverId,d.driverName 
+from bookingDetails  as b inner join driver as d on d.driverId =b.driverId ;
+
+
+select * from Drivers_car;
+

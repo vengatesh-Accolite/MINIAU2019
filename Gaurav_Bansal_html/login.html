@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login Page</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="style.css">
+	<style>
+	body { background-color:lightblue; }
+	</style>
+</head>
+
+<body>
+		
+		<p align="right"> <font color="red">AU Login/Sign up</font> </p>
+		<img align="right" src="logo.png" alt="AU Login" width="180" height="180">
+		
+	 <h1>Log in</h1> 
+		<p> 
+            <label for="username" class="uname" data-icon="u" > Your email ID : </label>
+            <input id="username" name="username" required="required" type="text" placeholder="myusername"/>
+        </p>
+		
+        <p> 
+			<label for="password" class="youpasswd" data-icon="p"> Your password: </label>
+			<input id="password" name="password" required="required" type="password" placeholder="password" /> 
+        </p>
+        <p class="keeplogin"> 
+			<input type="checkbox" name="loginkeeping" id="loginkeeping" value="loginkeeping" /> 
+			<label for="loginkeeping">Keep me logged in</label>
+		</p>
+        <p class="login button"> 
+            <input type="submit" onClick="checkid()" value="Login" /> 
+		</p>
+        <p class="change_link">
+			Not a member yet ?
+			<a class="to_register">Join Us</a>
+		</p>
+		
+		 <hr width="60%">
+		 
+		<form> 
+        <h1> Sign up </h1> 
+         <p> 
+            <label for="usernamesignup" class="uname" data-icon="u">Your username</label>
+            <input id="usernamesignup" name="usernamesignup" required="required" type="text" placeholder="myusername" />
+        </p>
+        <p> 
+            <label for="emailsignup" class="youmail" data-icon="e" > Your email</label>
+            <input id="emailsignup" name="emailsignup" required="required" type="email" placeholder="email id"/>
+        </p>
+        <p> 
+            <label for="passwordsignup" class="youpasswd" data-icon="p">Your password </label>
+            <input id="passwordsignup" name="passwordsignup" required="required" type="password" placeholder="password"/>
+        </p>
+        <p> 
+            <label for="passwordsignup_confirm" class="youpasswd" data-icon="p">Please confirm your password </label>
+            <input id="passwordsignup_confirm" name="passwordsignup_confirm" required="required" type="password" placeholder="password"/>
+        </p>
+        <p class="signin button"> 
+			<input type="submit" onClick="storeid()" value="Sign up"/> 
+		</p>
+        <p class="change_link">  
+			Already a member ?
+			<a  class="to_register"> Go and log in </a>
+		</p>
+     </form>
+	 
+	 <script>
+			function storeid() {
+	        var userid = document.getElementById('emailsignup').value;
+	        var password = document.getElementById('passwordsignup').value;
+    	    localStorage.setItem('username', userid);
+    	    localStorage.setItem('password', password);
+	        document.getElementById('username').value="";
+	        document.getElementById('password').value="";
+			myFunction();
+			}
+			function myFunction()
+			{
+				alert('Signup Successful');
+			}
+			
+			function checkid() {
+				var uname = localStorage.getItem('username');
+				var upassword = localStorage.getItem('password');
+				var username = document.getElementById('username');
+				var userpassword = document.getElementById('password');
+	
+				if(username.value == uname && userpassword.value == upassword) {
+					location.replace("youtube.html");
+					alert('Login Successful!');
+				}else {
+					alert('Login Error!');
+				}
+		}
+			
+	 </script>
+	 
+
+</body>
+
+</html>
